@@ -1,0 +1,33 @@
+<div class="relative w-full h-full min-h-[300px] rounded-2xl overflow-hidden bg-[#F5F5F7] border border-[#E5E5EA]">
+  <!-- Leaflet Map Container -->
+  <div #mapContainer class="w-full h-full min-h-[300px] z-0"></div>
+
+  <!-- Top Overlay: EUDR Status -->
+  <div class="absolute top-3 left-3 z-10 pointer-events-none">
+    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md border border-[#E5E5EA] text-[11px] pointer-events-auto">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#248A3D]"></span>
+      <span class="font-medium text-[#1D1D1F]">EUDR Cero Deforestación</span>
+    </div>
+  </div>
+
+  <!-- Map Mode Switcher -->
+  <div class="absolute top-3 right-3 z-10 pointer-events-auto">
+    <button
+      type="button"
+      (click)="toggleTileLayer()"
+      class="px-2.5 py-1 rounded-full bg-white/90 hover:bg-white text-[#1D1D1F] text-[11px] font-medium backdrop-blur-md border border-[#E5E5EA] transition-all cursor-pointer shadow-xs active:scale-95"
+    >
+      {{ isSatellite() ? 'Satélite' : 'Terreno' }}
+    </button>
+  </div>
+
+  <!-- Bottom Coordinate Bar -->
+  <div class="absolute bottom-2.5 left-3 right-3 z-10 pointer-events-none flex items-center justify-between text-[10px] font-mono text-[#86868B]">
+    <div class="px-2 py-0.5 rounded bg-white/80 backdrop-blur-sm border border-[#E5E5EA]">
+      {{ latitude.toFixed(4) }}°, {{ longitude.toFixed(4) }}° · Alto Beni
+    </div>
+    <div class="px-2 py-0.5 rounded bg-white/80 backdrop-blur-sm border border-[#E5E5EA]">
+      {{ plotCode }}
+    </div>
+  </div>
+</div>

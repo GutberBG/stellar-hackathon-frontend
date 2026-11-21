@@ -1,0 +1,108 @@
+<div class="animate-fade-slide space-y-12">
+  
+  <!-- Header Minimalista -->
+  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-[-0.03em] text-[#1D1D1F]">
+        Resumen Operativo
+      </h1>
+      <p class="text-xs text-[#86868B] mt-1">
+        Métricas de liquidez del Pool Vaquita y estado de notarización de cosechas.
+      </p>
+    </div>
+
+    <!-- Quick Navigation Link -->
+    <div class="flex items-center gap-3">
+      <a
+        routerLink="/acopio"
+        class="text-xs font-medium text-[#0071E3] hover:underline"
+      >
+        Registrar Entrega &rarr;
+      </a>
+      <span class="text-[#E5E5EA]">|</span>
+      <a
+        routerLink="/factoring"
+        class="text-xs font-medium text-[#0071E3] hover:underline"
+      >
+        Simulador IA &rarr;
+      </a>
+    </div>
+  </div>
+
+  <!-- Métricas Principales en Fila Abierta (Hairline Dividers, No Cards) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 border-t border-b border-[#E5E5EA] py-6 gap-8">
+    
+    <!-- Col 1: Pool Vaquita -->
+    <div class="md:pr-8 md:border-r md:border-[#E5E5EA]">
+      <span class="text-xs text-[#86868B] uppercase tracking-wider block mb-1">Pool de Liquidez Vaquita</span>
+      <div class="text-3xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+        <app-animated-counter
+          [value]="dashboardData()?.vaquita_pool?.available_liquidity_usdc || 25000"
+          prefix="$"
+          suffix=" USDC"
+        ></app-animated-counter>
+      </div>
+      <div class="text-xs text-[#86868B] mt-1">
+        Capacidad total: {{ (dashboardData()?.vaquita_pool?.total_liquidity_usdc || 30000) | currencyUsdc }}
+      </div>
+    </div>
+
+    <!-- Col 2: Total Financiado -->
+    <div class="md:px-8 md:border-r md:border-[#E5E5EA]">
+      <span class="text-xs text-[#86868B] uppercase tracking-wider block mb-1">Total Adelantado a Productores</span>
+      <div class="text-3xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+        <app-animated-counter
+          [value]="dashboardData()?.total_advanced_usdc || 18450"
+          prefix="$"
+          suffix=" USDC"
+        ></app-animated-counter>
+      </div>
+      <div class="text-xs text-[#248A3D] mt-1 tabular-nums font-medium">
+        ≈ {{ (dashboardData()?.total_advanced_bob || 128412) | currencyBob }}
+      </div>
+    </div>
+
+    <!-- Col 3: Contratos Activos -->
+    <div class="md:pl-8">
+      <span class="text-xs text-[#86868B] uppercase tracking-wider block mb-1">Contratos en Custodia</span>
+      <div class="text-3xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+        {{ dashboardData()?.active_loans_count || 3 }} en escrow
+      </div>
+      <div class="text-xs text-[#86868B] mt-1">
+        {{ dashboardData()?.settled_loans_count || 8 }} créditos liquidados con éxito
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Trazabilidad Reciente en Tabla Fina -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between text-xs">
+      <h2 class="font-semibold text-[#1D1D1F]">Últimas Entregas Notarizadas en Stellar</h2>
+      <a routerLink="/acopio" class="text-[#0071E3] hover:underline font-medium">Ver acopio</a>
+    </div>
+
+    <div class="divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] text-xs">
+      @for (item of dashboardData()?.recent_deliveries; track item.id) {
+        <div class="py-3 flex items-center justify-between gap-4">
+          <div>
+            <div class="font-medium text-[#1D1D1F]">{{ item.producer_name }}</div>
+            <div class="text-[11px] text-[#86868B] font-mono">
+              {{ item.delivery_code }} · {{ item.cacao_type }} ({{ item.net_dry_weight_kg }} kg seco) · Grado {{ item.quality_grade }}
+            </div>
+          </div>
+
+          <div class="text-right">
+            <div class="font-semibold text-[#1D1D1F] tabular-nums">
+              {{ item.total_amount_usdc | currencyUsdc }}
+            </div>
+            <div class="mt-0.5">
+              <app-stellar-badge [txHash]="item.stellar_tx_hash || ''" [startChars]="4" [endChars]="4"></app-stellar-badge>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,179 @@
+<div class="animate-fade-slide max-w-lg mx-auto py-6">
+  
+  <!-- Apple Pay Style Checkout Header -->
+  <div class="text-center mb-8">
+    <div class="text-xs text-[#86868B] uppercase tracking-wider mb-2">Desembolso Inmediato</div>
+    <div class="text-5xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+      {{ (requestedAmountUsdc * exchangeRate) | currencyBob }}
+    </div>
+    <div class="text-sm text-[#86868B] mt-1 font-normal tabular-nums">
+      {{ requestedAmountUsdc | currencyUsdc }} · Tasa oficial 6.96
+    </div>
+  </div>
+
+  <!-- Filas Finas de Desglose (No Cards) -->
+  <div class="divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] text-xs mb-8">
+    
+    <div class="py-3 flex justify-between items-center">
+      <span class="text-[#86868B]">Beneficiario</span>
+      <span class="font-medium text-[#1D1D1F]">{{ currentProducer().name }}</span>
+    </div>
+
+    <div class="py-3 flex justify-between items-center">
+      <span class="text-[#86868B]">Comunidad / Cooperativa</span>
+      <span class="text-[#1D1D1F]">{{ currentProducer().community }}</span>
+    </div>
+
+    <div class="py-3 flex justify-between items-center">
+      <span class="text-[#86868B]">Monto Solicitado (USDC)</span>
+      <div class="flex items-center gap-1">
+        <span class="text-[#86868B]">$</span>
+        <input
+          type="number"
+          [(ngModel)]="requestedAmountUsdc"
+          [max]="maxApprovedUsdc()"
+          min="50"
+          step="50"
+          class="w-24 text-right text-xs font-semibold tabular-nums text-[#1D1D1F] bg-transparent focus:outline-none focus:text-[#0071E3]"
+        />
+        <span class="text-[#86868B]">USDC</span>
+      </div>
+    </div>
+
+    <div class="py-3 flex justify-between items-center text-[#86868B]">
+      <span>Comisión Total al Cierre (2.5%)</span>
+      <span class="font-mono tabular-nums">
+        {{ (requestedAmountUsdc * 0.025) | currencyUsdc }} (2% LP + 0.5% Red)
+      </span>
+    </div>
+
+    <div class="py-3 flex justify-between items-center">
+      <span class="text-[#86868B]">Medio de Cobro</span>
+      <span class="font-medium text-[#1D1D1F]">Pollar Simple QR (Bolivia Interbancario)</span>
+    </div>
+
+  </div>
+
+  <!-- Checklist Minimalista de Progreso Smart Contract -->
+  @if (executionStep() !== 'IDLE') {
+    <div class="space-y-3 mb-8 text-xs divide-y divide-[#E5E5EA] border-b border-[#E5E5EA] pb-4">
+      
+      <!-- Paso 1 -->
+      <div class="pt-2 flex items-center justify-between">
+        <span class="text-[#1D1D1F]">1. Liquidez reservada en Pool Vaquita</span>
+        @if (stepState(1) === 'active') {
+          <span class="text-[#0071E3] font-mono text-[11px] animate-pulse">Reservando...</span>
+        } @else if (stepState(1) === 'done') {
+          <span class="text-[#248A3D] font-medium">✓ Confirmado</span>
+        } @else {
+          <span class="text-[#86868B]">Pendiente</span>
+        }
+      </div>
+
+      <!-- Paso 2 -->
+      <div class="pt-2 flex items-center justify-between">
+        <span class="text-[#1D1D1F]">2. Garantía bloqueada en Trustless Work</span>
+        @if (stepState(2) === 'active') {
+          <span class="text-[#0071E3] font-mono text-[11px] animate-pulse">Bloqueando...</span>
+        } @else if (stepState(2) === 'done') {
+          <span class="text-[#248A3D] font-medium">✓ Confirmado</span>
+        } @else {
+          <span class="text-[#86868B]">Pendiente</span>
+        }
+      </div>
+
+      <!-- Paso 3 -->
+      <div class="pt-2 flex items-center justify-between">
+        <span class="text-[#1D1D1F]">3. Orden QR emitida en Pollar (Bs.)</span>
+        @if (stepState(3) === 'active') {
+          <span class="text-[#0071E3] font-mono text-[11px] animate-pulse">Generando...</span>
+        } @else if (stepState(3) === 'done') {
+          <span class="text-[#248A3D] font-medium">✓ Emitido</span>
+        } @else {
+          <span class="text-[#86868B]">Pendiente</span>
+        }
+      </div>
+
+    </div>
+  }
+
+  <!-- Botón Primario de Confirmación -->
+  @if (!executionResult()) {
+    <button
+      type="button"
+      (click)="executeAdvance()"
+      [disabled]="isExecuting() || requestedAmountUsdc <= 0"
+      class="w-full py-3.5 px-6 rounded-xl bg-[#1D1D1F] hover:bg-black text-white text-xs font-medium tracking-tight shadow-xs transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2 mb-12"
+    >
+      @if (isExecuting()) {
+        <span>Procesando Desembolso...</span>
+      } @else {
+        <span>Confirmar & Desembolsar vía Pollar</span>
+      }
+    </button>
+  }
+
+  <!-- Código QR Real Limpio y Centrado (El Objeto Protagonista) -->
+  @if (executionResult()) {
+    <div class="mb-12">
+      <app-qr-receipt-card
+        [loanCode]="executionResult()!.loan_code"
+        [producerName]="executionResult()!.producer_name"
+        [amountBob]="executionResult()!.amount_bob"
+        [amountUsdc]="executionResult()!.approved_amount_usdc"
+        [qrPayload]="executionResult()!.pollar_qr_payload"
+        [trustlessEscrowId]="executionResult()!.trustless_escrow_id"
+        stellarTxHash="9f83a21bc9e1488c919d70233b2fe963d7e8b61efc0a76c8c912f2010cb7c844"
+      ></app-qr-receipt-card>
+    </div>
+  }
+
+  <!-- SECCIÓN DISCRETA: SIMULADOR DE CIERRE DE COSECHA & REPAGO -->
+  <div class="pt-8 border-t border-[#E5E5EA] space-y-4">
+    <div class="flex items-baseline justify-between text-xs">
+      <span class="text-[#86868B] uppercase tracking-wider">Cierre de Contrato & Repago</span>
+      <span class="text-[11px] text-[#86868B]">Comisión: 2.5%</span>
+    </div>
+
+    @for (loan of activeLoans(); track loan.id) {
+      <div class="py-3 flex items-center justify-between gap-4 text-xs border-b border-[#E5E5EA]">
+        <div>
+          <div class="font-medium text-[#1D1D1F]">{{ loan.producer_name }}</div>
+          <div class="text-[11px] font-mono text-[#86868B]">
+            {{ loan.loan_code }} · {{ loan.approved_amount_usdc | currencyUsdc }}
+          </div>
+        </div>
+
+        <div>
+          @if (loan.status === 'ACTIVE_ESCROW') {
+            <button
+              type="button"
+              (click)="settleLoan(loan.id)"
+              [disabled]="isSettling() && settlingLoanId() === loan.id"
+              class="px-3 py-1.5 rounded-lg bg-[#F5F5F7] hover:bg-[#E8E8ED] text-[#1D1D1F] text-xs font-medium transition-all active:scale-95 cursor-pointer"
+            >
+              @if (isSettling() && settlingLoanId() === loan.id) {
+                <span>Liquidando...</span>
+              } @else {
+                <span>Simular Liquidación</span>
+              }
+            </button>
+          } @else {
+            <span class="text-[#248A3D] font-medium text-xs">✓ Liquidado</span>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Mensaje de Resultado de Liquidación -->
+    @if (settlementResult()) {
+      <div class="py-3 text-xs text-[#248A3D] space-y-1">
+        <div class="font-medium">{{ settlementResult()!.message }}</div>
+        <div class="text-[11px] text-[#86868B] font-mono">
+          Principal devuelto: {{ settlementResult()!.principal_usdc | currencyUsdc }} · Rendimiento acreditado a LPs: {{ settlementResult()!.fee_vaquita_usdc | currencyUsdc }}
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

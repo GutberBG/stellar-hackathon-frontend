@@ -1,0 +1,50 @@
+<div class="w-full flex flex-col items-center text-center">
+  <!-- Pollar Simple QR Container (The ONE elevated/focused item allowed) -->
+  <div class="p-4 bg-white rounded-2xl border border-[#E5E5EA] shadow-xs inline-block mb-4">
+    @if (qrDataUrl()) {
+      <img [src]="qrDataUrl()" [alt]="'Pollar QR ' + loanCode" class="w-48 h-48 object-contain" />
+    } @else {
+      <div class="w-48 h-48 bg-[#F5F5F7] animate-pulse rounded flex items-center justify-center text-[#86868B] text-xs">
+        Generando QR...
+      </div>
+    }
+  </div>
+
+  <div class="text-xs text-[#86868B] max-w-xs leading-relaxed mb-6">
+    Escanea desde cualquier app bancaria de Bolivia (<span class="text-[#1D1D1F]">BCP, BNB, Bisa, Banco Unión</span>) para acreditar de inmediato.
+  </div>
+
+  <!-- Minimal Meta Breakdown (No Cards, Hairlines Only) -->
+  <div class="w-full max-w-sm text-xs divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] mb-6">
+    <div class="py-2.5 flex justify-between items-center">
+      <span class="text-[#86868B]">Beneficiario</span>
+      <span class="font-medium text-[#1D1D1F]">{{ producerName }}</span>
+    </div>
+    <div class="py-2.5 flex justify-between items-center">
+      <span class="text-[#86868B]">Código de Préstamo</span>
+      <span class="font-mono text-[#1D1D1F]">{{ loanCode }}</span>
+    </div>
+    <div class="py-2.5 flex justify-between items-center">
+      <span class="text-[#86868B]">Garantía Trustless Work</span>
+      <span class="font-mono text-[#1D1D1F]">{{ trustlessEscrowId | truncateHash: 8 : 4 }}</span>
+    </div>
+    @if (stellarTxHash) {
+      <div class="py-2.5 flex justify-between items-center">
+        <span class="text-[#86868B]">Registro Stellar</span>
+        <app-stellar-badge [txHash]="stellarTxHash" [startChars]="6" [endChars]="4"></app-stellar-badge>
+      </div>
+    }
+  </div>
+
+  <!-- Download button -->
+  <button
+    type="button"
+    (click)="downloadQr()"
+    class="text-xs font-medium text-[#0071E3] hover:underline cursor-pointer flex items-center gap-1.5"
+  >
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+    </svg>
+    Guardar imagen del código QR
+  </button>
+</div>

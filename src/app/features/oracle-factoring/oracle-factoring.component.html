@@ -1,0 +1,240 @@
+<div class="animate-fade-slide space-y-12">
+  
+  <!-- Header Minimalista -->
+  <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-[-0.03em] text-[#1D1D1F]">
+        Oráculo Climático Predictivo
+      </h1>
+      <p class="text-xs text-[#86868B] mt-1">
+        Modelado de riesgo agrícola por microclima en Alto Beni e historial de acopio en Stellar.
+      </p>
+    </div>
+
+    <!-- Quick Switcher -->
+    <div>
+      <select
+        [ngModel]="selectedProducerId()"
+        (ngModelChange)="onProducerChange($event)"
+        class="bg-transparent text-xs font-medium text-[#1D1D1F] border-b border-[#E5E5EA] pb-1 focus:outline-none cursor-pointer"
+      >
+        <option [value]="1">Mateo Mamani Ticona (Sapecho)</option>
+        <option [value]="2">Elena Quispe Condori (Palos Blancos)</option>
+        <option [value]="3">Carlos Condori Mamani (Bella Vista)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Franja Superior de Métricas Abiertas (Separadas por líneas finas, SIN CARDS) -->
+  <div class="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[#E5E5EA] py-4 text-xs">
+    
+    <!-- Col 1: Productor y Tier -->
+    <div class="pr-6 md:border-r md:border-[#E5E5EA]">
+      <span class="text-[#86868B] block mb-1">Perfil Auditado</span>
+      <div class="text-sm font-semibold text-[#1D1D1F] truncate">{{ currentProducer().name }}</div>
+      <span class="text-[11px] text-[#86868B]">{{ currentProducer().community }}</span>
+    </div>
+
+    <!-- Col 2: Cumplimiento -->
+    <div class="px-6 md:border-r md:border-[#E5E5EA]">
+      <span class="text-[#86868B] block mb-1">Cumplimiento Stellar</span>
+      <div class="text-sm font-semibold font-mono tabular-nums text-[#248A3D]">
+        {{ (currentProducer().compliance_score * 100).toFixed(0) }}%
+      </div>
+      <span class="text-[11px] text-[#86868B]">Calificación crediticia</span>
+    </div>
+
+    <!-- Col 3: Entregas Históricas -->
+    <div class="px-6 md:border-r md:border-[#E5E5EA] mt-4 md:mt-0">
+      <span class="text-[#86868B] block mb-1">Entregas Notarizadas</span>
+      <div class="text-sm font-semibold font-mono tabular-nums text-[#1D1D1F]">
+        {{ currentProducer().deliveries_count }} boletas
+      </div>
+      <span class="text-[11px] text-[#86868B]">Campañas 2025 - 2026</span>
+    </div>
+
+    <!-- Col 4: Total Entregado -->
+    <div class="pl-6 mt-4 md:mt-0">
+      <span class="text-[#86868B] block mb-1">Volumen Acopiado</span>
+      <div class="text-sm font-semibold font-mono tabular-nums text-[#1D1D1F]">
+        {{ currentProducer().total_delivered_kg | number }} kg
+      </div>
+      <span class="text-[11px] text-[#86868B]">Cacao certificado EUDR</span>
+    </div>
+
+  </div>
+
+  <!-- Cuerpo Principal en 2 Columnas Limpias -->
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+    
+    <!-- IZQUIERDA: VARIABLES CLIMÁTICAS CON SLIDERS (6 cols) -->
+    <div class="md:col-span-6 md:pr-12 md:border-r md:border-[#E5E5EA] space-y-8">
+      <div>
+        <h2 class="text-base font-semibold text-[#1D1D1F] tracking-tight">Variables de Campo</h2>
+        <p class="text-xs text-[#86868B] mt-0.5">Parámetros meteorológicos del mes de recolección.</p>
+      </div>
+
+      <!-- Slider 1: Precipitación -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-baseline text-xs">
+          <span class="text-[#1D1D1F] font-medium">Precipitación Proyectada</span>
+          <span class="font-mono tabular-nums font-semibold" [style.color]="rainfallMm > 240 ? '#D70015' : rainfallMm < 90 ? '#B25000' : '#248A3D'">
+            {{ rainfallMm }} mm/mes
+          </span>
+        </div>
+        <input
+          type="range"
+          min="50"
+          max="320"
+          step="5"
+          [(ngModel)]="rainfallMm"
+          (ngModelChange)="onSliderChange()"
+          class="apple-slider"
+        />
+        <div class="flex justify-between text-[11px] text-[#86868B]">
+          <span>50 mm (Déficit)</span>
+          <span class="text-[#248A3D]">140 - 180 mm (Óptimo)</span>
+          <span>320 mm (Exceso)</span>
+        </div>
+        @if (rainfallMm > 240) {
+          <p class="text-[11px] text-[#D70015] pt-1">
+            * Alerta fitosanitaria: precipitación excesiva propicia esporulación de Moniliasis.
+          </p>
+        }
+      </div>
+
+      <!-- Slider 2: Humedad Relativa -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-baseline text-xs">
+          <span class="text-[#1D1D1F] font-medium">Humedad Relativa Promedio</span>
+          <span class="font-mono tabular-nums font-semibold" [style.color]="humidityPct > 85 ? '#B25000' : '#248A3D'">
+            {{ humidityPct }}%
+          </span>
+        </div>
+        <input
+          type="range"
+          min="60"
+          max="98"
+          step="1"
+          [(ngModel)]="humidityPct"
+          (ngModelChange)="onSliderChange()"
+          class="apple-slider"
+        />
+        <div class="flex justify-between text-[11px] text-[#86868B]">
+          <span>60%</span>
+          <span>Umbral crítico: 85%</span>
+          <span>98%</span>
+        </div>
+      </div>
+
+      <!-- Slider 3: Cosecha Estimada -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-baseline text-xs">
+          <span class="text-[#1D1D1F] font-medium">Cosecha Estimada a Entregar</span>
+          <span class="font-mono tabular-nums font-semibold text-[#1D1D1F]">
+            {{ expectedHarvestKg | number }} kg
+          </span>
+        </div>
+        <input
+          type="range"
+          min="500"
+          max="5000"
+          step="100"
+          [(ngModel)]="expectedHarvestKg"
+          (ngModelChange)="onSliderChange()"
+          class="apple-slider"
+        />
+        <div class="flex justify-between text-[11px] text-[#86868B]">
+          <span>500 kg</span>
+          <span>2,500 kg</span>
+          <span>5,000 kg</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DERECHA: DIAGNÓSTICO DEL MODELO IA (6 cols) -->
+    <div class="md:col-span-6 space-y-8">
+      <div>
+        <h2 class="text-base font-semibold text-[#1D1D1F] tracking-tight">Evaluación del Modelo</h2>
+        <p class="text-xs text-[#86868B] mt-0.5">Capacidad crediticia calculada en tiempo real.</p>
+      </div>
+
+      <!-- Anillo Fino de Riesgo + Cifra Display Grande -->
+      <div class="flex items-center gap-8 py-2">
+        <!-- Minimal SVG Ring -->
+        <div class="relative w-24 h-24 shrink-0 flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 84 84">
+            <circle cx="42" cy="42" r="36" stroke="#E5E5EA" stroke-width="3" fill="transparent"></circle>
+            <circle
+              cx="42"
+              cy="42"
+              r="36"
+              [attr.stroke]="gaugeColor()"
+              stroke-width="3"
+              stroke-linecap="round"
+              fill="transparent"
+              [attr.stroke-dasharray]="gaugeCircumference"
+              [attr.stroke-dashoffset]="gaugeOffset()"
+              class="transition-all duration-300 ease-out"
+            ></circle>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <span class="text-xl font-semibold font-mono tabular-nums text-[#1D1D1F]">
+              {{ simulation()?.risk_score?.toFixed(0) || 22 }}
+            </span>
+            <span class="text-[9px] text-[#86868B] uppercase">Riesgo</span>
+          </div>
+        </div>
+
+        <!-- Cupo Máximo -->
+        <div>
+          <span class="text-xs text-[#86868B] block mb-0.5">Cupo Máximo Aprobado</span>
+          <div class="text-4xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+            <app-animated-counter
+              [value]="simulation()?.max_advance_usdc || 2640"
+              prefix="$"
+              suffix=" USDC"
+            ></app-animated-counter>
+          </div>
+          <div class="text-sm text-[#248A3D] font-medium tabular-nums mt-0.5">
+            ≈ <app-animated-counter [value]="simulation()?.max_advance_bob || 18374.4" prefix="Bs. "></app-animated-counter>
+          </div>
+          <span class="text-[11px] text-[#86868B] mt-1 block">
+            Adelanto pre-aprobado: {{ simulation()?.approved_advance_pct || 55 }}% de la cosecha.
+          </span>
+        </div>
+      </div>
+
+      <!-- Factores Explicativos en Filas Finas -->
+      <div class="space-y-3 pt-2">
+        <span class="text-xs text-[#86868B] uppercase tracking-wider block">Factores del Dictamen</span>
+        <div class="divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] text-xs">
+          @for (factor of simulation()?.risk_factors; track factor) {
+            <div class="py-2.5 flex items-start gap-3">
+              <span class="text-[#86868B] font-mono">—</span>
+              <span class="text-[#1D1D1F] leading-relaxed">{{ factor }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Botón Primario Apple -->
+      <div class="pt-2">
+        <button
+          type="button"
+          (click)="proceedToSettlement()"
+          class="w-full py-3 px-6 rounded-xl bg-[#1D1D1F] hover:bg-black text-white text-xs font-medium tracking-tight shadow-xs transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+        >
+          <span>Continuar al Desembolso</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

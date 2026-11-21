@@ -1,0 +1,227 @@
+<div class="animate-fade-slide">
+  <!-- Split-View Open Canvas (No Cards) -->
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+    
+    <!-- LEFT COLUMN: REGISTRO DE PESAJE (6 cols) -->
+    <div class="md:col-span-6 md:pr-12 md:border-r md:border-[#E5E5EA]">
+      <div class="mb-8">
+        <h1 class="text-2xl font-semibold tracking-[-0.03em] text-[#1D1D1F]">
+          Registro de Acopio
+        </h1>
+        <p class="text-xs text-[#86868B] mt-1">
+          Báscula centralizada y certificación de origen para Alto Beni y Palos Blancos.
+        </p>
+      </div>
+
+      <!-- iOS Settings Grouped Form (Filas con líneas finas) -->
+      <div class="divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] mb-8 text-sm">
+        
+        <!-- Row: Productor -->
+        <div class="py-3.5 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Productor</label>
+          <div class="flex-1 text-right">
+            <select
+              [ngModel]="selectedProducerId()"
+              (ngModelChange)="onProducerChange($event)"
+              class="bg-transparent text-sm font-medium text-[#1D1D1F] text-right focus:outline-none cursor-pointer"
+            >
+              @for (p of producers(); track p.id) {
+                <option [value]="p.id">
+                  {{ p.name }} ({{ p.community }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Row: Segmented Control Baba / Seco -->
+        <div class="py-3.5 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Tipo de Grano</label>
+          <div class="flex items-center p-0.5 rounded-xl bg-[#E8E8ED]">
+            <button
+              type="button"
+              (click)="setCacaoType('SECO')"
+              [class]="cacaoType() === 'SECO' ? 'bg-white text-[#1D1D1F] shadow-sm font-medium' : 'text-[#86868B] hover:text-[#1D1D1F]'"
+              class="px-3 py-1 rounded-[10px] text-xs transition-all duration-200 ease-out cursor-pointer"
+            >
+              Seco
+            </button>
+            <button
+              type="button"
+              (click)="setCacaoType('BABA')"
+              [class]="cacaoType() === 'BABA' ? 'bg-white text-[#1D1D1F] shadow-sm font-medium' : 'text-[#86868B] hover:text-[#1D1D1F]'"
+              class="px-3 py-1 rounded-[10px] text-xs transition-all duration-200 ease-out cursor-pointer"
+            >
+              En Baba (x0.33)
+            </button>
+          </div>
+        </div>
+
+        <!-- Row: Peso Bruto -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Peso Bruto</label>
+          <div class="flex items-center gap-1.5">
+            <input
+              type="number"
+              [(ngModel)]="grossWeightKg"
+              min="1"
+              step="0.5"
+              class="w-24 text-right text-sm font-semibold tabular-nums text-[#1D1D1F] bg-transparent focus:outline-none focus:text-[#0071E3]"
+            />
+            <span class="text-xs text-[#86868B]">kg</span>
+          </div>
+        </div>
+
+        <!-- Row: Humedad -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Humedad Medida</label>
+          <div class="flex items-center gap-1.5">
+            <input
+              type="number"
+              [(ngModel)]="moisturePercentage"
+              min="0"
+              max="100"
+              step="0.1"
+              class="w-20 text-right text-sm font-semibold tabular-nums text-[#1D1D1F] bg-transparent focus:outline-none focus:text-[#0071E3]"
+            />
+            <span class="text-xs text-[#86868B]">%</span>
+          </div>
+        </div>
+
+        <!-- Row: Calidad Segmentada -->
+        <div class="py-3.5 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Calidad Física</label>
+          <div class="flex items-center p-0.5 rounded-xl bg-[#E8E8ED]">
+            @for (g of qualityGrades; track g.grade) {
+              <button
+                type="button"
+                (click)="setQualityGrade(g.grade)"
+                [class]="qualityGrade() === g.grade ? 'bg-white text-[#1D1D1F] shadow-sm font-medium' : 'text-[#86868B] hover:text-[#1D1D1F]'"
+                class="px-2.5 py-1 rounded-[10px] text-xs transition-all duration-200 ease-out cursor-pointer"
+              >
+                Grado {{ g.grade }} ({{ g.factor }}x)
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- Row: Precio Base -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-[#86868B] text-xs font-normal shrink-0">Precio Base</label>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs text-[#86868B]">$</span>
+            <input
+              type="number"
+              [(ngModel)]="basePriceUsdc"
+              min="0.1"
+              step="0.1"
+              class="w-20 text-right text-sm font-semibold tabular-nums text-[#1D1D1F] bg-transparent focus:outline-none focus:text-[#0071E3]"
+            />
+            <span class="text-xs text-[#86868B]">USDC/kg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón de Notarización Apple -->
+      <button
+        type="button"
+        (click)="submitDelivery()"
+        [disabled]="isSubmitting() || grossWeightKg <= 0"
+        class="w-full py-3 px-6 rounded-xl bg-[#1D1D1F] hover:bg-black text-white text-xs font-medium tracking-tight shadow-xs transition-all active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none cursor-pointer flex items-center justify-center gap-2"
+      >
+        @if (isSubmitting()) {
+          <span>Notarizando en Stellar...</span>
+        } @else {
+          <span>Notarizar en Stellar & Emitir Boleta</span>
+        }
+      </button>
+
+      <!-- Mini Audit Footer -->
+      <div class="mt-4 text-[11px] text-[#86868B] flex items-center justify-between">
+        <span>Cooperativa: {{ currentProducer().cooperative }}</span>
+        <span class="font-mono">Plot: {{ currentProducer().eudr_plot_code }}</span>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: LIQUIDACIÓN EDITORIAL + MAPA EUDR (6 cols) -->
+    <div class="md:col-span-6 space-y-8">
+      
+      <!-- Cifras Protagonistas (Sin Tarjeta) -->
+      <div>
+        <div class="text-xs text-[#86868B] uppercase tracking-wider mb-1">Total Liquidable</div>
+        <div class="text-5xl font-semibold tracking-[-0.03em] text-[#1D1D1F] tabular-nums">
+          <app-animated-counter [value]="liveTotalUsdc()" prefix="$" suffix=" USDC"></app-animated-counter>
+        </div>
+        <div class="text-lg text-[#248A3D] font-medium tracking-tight mt-1 tabular-nums">
+          ≈ <app-animated-counter [value]="liveTotalBob()" prefix="Bs. "></app-animated-counter>
+        </div>
+      </div>
+
+      <!-- Desglose Agronómico en Filas Finas -->
+      <div class="divide-y divide-[#E5E5EA] border-t border-b border-[#E5E5EA] text-xs">
+        <div class="py-2.5 flex justify-between items-center">
+          <span class="text-[#86868B]">Peso Bruto Ingresado</span>
+          <span class="font-mono text-[#1D1D1F]">{{ grossWeightKg }} kg</span>
+        </div>
+
+        @if (cacaoType() === 'BABA') {
+          <div class="py-2.5 flex justify-between items-center text-[#B25000]">
+            <span>Conversión Grano Seco (factor 0.33)</span>
+            <span class="font-mono">-{{ (grossWeightKg * 0.67).toFixed(1) }} kg merma pulpa</span>
+          </div>
+        } @else if (moisturePercentage > 7.5) {
+          <div class="py-2.5 flex justify-between items-center text-[#B25000]">
+            <span>Deducción por Humedad ({{ moisturePercentage }}% vs 7.5%)</span>
+            <span class="font-mono">-{{ ((grossWeightKg * (moisturePercentage - 7.5)) / 100).toFixed(1) }} kg merma</span>
+          </div>
+        }
+
+        <div class="py-2.5 flex justify-between items-center font-medium">
+          <span class="text-[#1D1D1F]">Peso Neto Seco Liquidable</span>
+          <span class="font-mono text-[#248A3D]">
+            <app-animated-counter [value]="liveNetDryWeight()" suffix=" kg"></app-animated-counter>
+          </span>
+        </div>
+
+        <div class="py-2.5 flex justify-between items-center">
+          <span class="text-[#86868B]">Precio Final (Grado {{ qualityGrade() }})</span>
+          <span class="font-mono text-[#1D1D1F]">&#36;{{ liveFinalPrice() }} USDC/kg</span>
+        </div>
+
+        <div class="py-2.5 flex justify-between items-center">
+          <span class="text-[#86868B]">Código de Boleta</span>
+          <span class="font-mono text-[#1D1D1F]">{{ lastSavedDelivery()?.delivery_code || liveDeliveryCode() }}</span>
+        </div>
+      </div>
+
+      <!-- Mapa Satelital EUDR Integrado en el Lienzo -->
+      <div>
+        <div class="flex items-center justify-between text-xs text-[#86868B] mb-2">
+          <span>Ubicación Satelital de Parcela</span>
+          <span class="font-mono text-[11px]">{{ currentProducer().community }}</span>
+        </div>
+
+        <div class="h-64 w-full">
+          <app-eudr-map
+            [latitude]="currentProducer().eudr_latitude"
+            [longitude]="currentProducer().eudr_longitude"
+            [plotCode]="currentProducer().eudr_plot_code"
+            [producerName]="currentProducer().name"
+            [community]="currentProducer().community"
+          ></app-eudr-map>
+        </div>
+
+        <!-- Línea Inferior Discreta de Certificación & Hash -->
+        <div class="mt-3 flex items-center justify-between text-[11px] text-[#86868B] font-mono">
+          <span class="text-[#248A3D] font-sans">✓ Certificación Deforestación Cero</span>
+          @if (lastSavedDelivery()?.stellar_tx_hash) {
+            <app-stellar-badge [txHash]="lastSavedDelivery()!.stellar_tx_hash!"></app-stellar-badge>
+          } @else {
+            <span class="text-[#86868B]">Hash pendiente de emisión</span>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
