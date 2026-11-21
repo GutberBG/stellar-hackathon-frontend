@@ -29,7 +29,7 @@ export class AcopioComponent implements OnInit {
   private deliveryService = inject(DeliveryService);
   private state = inject(StateService);
 
-  protected producers = signal<Producer[]>([]);
+  protected producers = signal<Producer[]>(this.state.producers());
   protected selectedProducerId = signal<number>(1);
   protected cacaoType = signal<CacaoType>('SECO');
   protected qualityGrade = signal<QualityGrade>('A');
