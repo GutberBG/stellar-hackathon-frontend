@@ -7,6 +7,12 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'auth',
+    loadComponent: () =>
+      import('./features/auth/auth.component').then((m) => m.AuthComponent),
+    title: 'Ayni Cacao · Acceso & Registro Pollar',
+  },
+  {
     path: 'acopio',
     loadComponent: () =>
       import('./features/acopio/acopio.component').then((m) => m.AcopioComponent),
@@ -32,7 +38,23 @@ export const routes: Routes = [
     path: 'overview',
     loadComponent: () =>
       import('./features/overview/overview.component').then((m) => m.OverviewComponent),
-    title: 'Ayni Cacao · Resumen de Liquidez',
+    title: 'Ayni Cacao · Resumen de Liquidez Pool Vaquita',
+  },
+  {
+    path: 'mi-parcela',
+    loadComponent: () =>
+      import('./features/mi-parcela/mi-parcela.component').then(
+        (m) => m.MiParcelaComponent
+      ),
+    title: 'Ayni Cacao · Mi Parcela & Certificación EUDR',
+  },
+  {
+    path: 'mis-operaciones',
+    loadComponent: () =>
+      import('./features/mis-operaciones/mis-operaciones.component').then(
+        (m) => m.MisOperacionesComponent
+      ),
+    title: 'Ayni Cacao · Mis Operaciones & Cobro QR',
   },
   {
     path: '**',

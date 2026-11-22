@@ -1,0 +1,220 @@
+<div class="max-w-6xl mx-auto px-6 py-10">
+  <!-- Header Minimalista (Lienzo Abierto) -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-[#E5E5EA]">
+    <div>
+      <div class="text-xs uppercase tracking-wider text-[#86868B] font-medium mb-1">
+        Georreferenciación & Trazabilidad
+      </div>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-[#1D1D1F]">
+        Mi Parcela & Perfil Productor
+      </h1>
+      <p class="text-sm text-[#86868B] mt-1">
+        Identidad comunitaria y certificación satelital de deforestación cero EUDR para exportación a la Unión Europea.
+      </p>
+    </div>
+
+    <!-- Live Compliance Status Indicator -->
+    <div class="flex items-center gap-3">
+      <div class="px-3.5 py-1.5 bg-[#F5F5F7] rounded-full flex items-center gap-2 border border-[#E5E5EA]">
+        <span class="w-2 h-2 rounded-full bg-[#248A3D] animate-pulse"></span>
+        <span class="text-xs font-semibold text-[#1D1D1F]">EUDR Compliant · Alto Beni</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  @if (saveSuccess()) {
+    <div class="mt-4 p-3.5 bg-[#F0FDF4] border border-[#DCFCE7] text-[#248A3D] rounded-xl text-xs font-medium flex items-center justify-between">
+      <span>Perfil y coordenadas satelitales actualizados con éxito en el oráculo.</span>
+      <span class="text-[11px] text-[#248A3D] font-mono">GUARDADO</span>
+    </div>
+  }
+
+  <!-- Split View (Open Canvas) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+    <!-- Columna Izquierda: Ajustes de Perfil (Estilo iOS Settings Rows) -->
+    <div class="md:pr-8 md:border-r border-[#E5E5EA] space-y-6">
+      <div>
+        <h2 class="text-lg font-semibold tracking-[-0.02em] text-[#1D1D1F]">
+          Datos de Productor & Cooperativa
+        </h2>
+        <p class="text-xs text-[#86868B] mt-0.5">
+          Información registrada para desembolsos bancarios directos y boletas de acopio.
+        </p>
+      </div>
+
+      <!-- Settings Rows Form -->
+      <div class="divide-y divide-[#E5E5EA] border-y border-[#E5E5EA]">
+        <!-- Row: Nombre -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Nombre Completo</label>
+          <input
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            class="w-2/3 text-right text-xs md:text-sm font-medium text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Cédula -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Cédula de Identidad</label>
+          <input
+            type="text"
+            [ngModel]="ciNumber()"
+            (ngModelChange)="ciNumber.set($event)"
+            class="w-2/3 text-right text-xs md:text-sm font-mono text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Comunidad -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Comunidad</label>
+          <input
+            type="text"
+            [ngModel]="community()"
+            (ngModelChange)="community.set($event)"
+            class="w-2/3 text-right text-xs md:text-sm font-medium text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Cooperativa -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Cooperativa</label>
+          <input
+            type="text"
+            [ngModel]="cooperative()"
+            (ngModelChange)="cooperative.set($event)"
+            class="w-2/3 text-right text-xs md:text-sm font-medium text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Teléfono -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Teléfono Celular</label>
+          <input
+            type="text"
+            [ngModel]="phone()"
+            (ngModelChange)="phone.set($event)"
+            class="w-2/3 text-right text-xs md:text-sm font-mono text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Cuenta Bancaria Destino Pollar QR -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <div class="w-1/3">
+            <div class="text-xs font-medium text-[#86868B]">Cuenta Simple QR</div>
+            <div class="text-[10px] text-[#86868B]">Banca móvil nacional</div>
+          </div>
+          <input
+            type="text"
+            [ngModel]="bankAccountHint()"
+            (ngModelChange)="bankAccountHint.set($event)"
+            placeholder="Ej. Banco Unión - Simple QR"
+            class="w-2/3 text-right text-xs md:text-sm font-medium text-[#1D1D1F] bg-transparent outline-none focus:text-[#0071E3]"
+          />
+        </div>
+
+        <!-- Row: Código Parcela EUDR (Readonly) -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Código Parcela EUDR</label>
+          <span class="w-2/3 text-right text-xs font-mono text-[#1D1D1F] select-all">
+            {{ plotCode() }}
+          </span>
+        </div>
+
+        <!-- Row: Puntuación de Cumplimiento -->
+        <div class="py-3 flex items-center justify-between gap-4">
+          <label class="text-xs font-medium text-[#86868B] w-1/3">Índice de Confianza</label>
+          <span class="w-2/3 text-right text-xs font-semibold tabular-nums text-[#248A3D]">
+            {{ complianceScore() * 100 | number: '1.0-0' }}% (Riesgo Bajo)
+          </span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="pt-2">
+        <button
+          type="button"
+          (click)="saveProfile()"
+          [disabled]="isSaving()"
+          class="w-full py-3.5 px-6 bg-[#1D1D1F] hover:bg-black text-white text-xs md:text-sm font-medium rounded-full transition-all active:scale-[0.98] disabled:opacity-50"
+        >
+          @if (isSaving()) {
+            Guardando...
+          } @else {
+            Guardar Cambios de Perfil
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Mapa Interactivo & Hectáreas (Lienzo Abierto) -->
+    <div class="space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-semibold tracking-[-0.02em] text-[#1D1D1F]">
+            Delimitación de Parcela
+          </h2>
+          <p class="text-xs text-[#86868B] mt-0.5">
+            Haz clic o arrastra el pin para ajustar la georreferenciación satelital.
+          </p>
+        </div>
+
+        <!-- Capa Satelital Toggle Button -->
+        <button
+          type="button"
+          (click)="toggleMapLayer()"
+          class="px-3 py-1.5 bg-[#F5F5F7] hover:bg-[#E8E8ED] border border-[#E5E5EA] rounded-lg text-xs font-medium text-[#1D1D1F] transition-colors"
+        >
+          {{ isSatellite() ? 'Modo Mapa' : 'Modo Satélite' }}
+        </button>
+      </div>
+
+      <!-- Leaflet Map Container -->
+      <div class="relative w-full h-[360px] rounded-2xl overflow-hidden border border-[#E5E5EA]">
+        <div #mapContainer class="w-full h-full"></div>
+
+        <!-- Floating Coordinates Badge -->
+        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[#E5E5EA] text-[11px] font-mono text-[#1D1D1F] shadow-sm pointer-events-none">
+          Lat: {{ latitude() | number: '1.4-6' }} · Lng: {{ longitude() | number: '1.4-6' }}
+        </div>
+      </div>
+
+      <!-- Slider de Precisión de Hectáreas (Apple Style) -->
+      <div class="pt-4 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-medium text-[#86868B]">Superficie Cultivada</span>
+          <span class="font-semibold text-[#1D1D1F] tabular-nums text-sm">
+            {{ hectares() | number: '1.1-1' }} Hectáreas
+          </span>
+        </div>
+
+        <input
+          type="range"
+          min="0.5"
+          max="20.0"
+          step="0.1"
+          [ngModel]="hectares()"
+          (ngModelChange)="onHectaresChange($event)"
+          class="w-full appearance-none bg-[#E5E5EA] h-1 rounded-full outline-none cursor-pointer"
+        />
+
+        <div class="flex justify-between text-[10px] text-[#86868B] font-mono">
+          <span>0.5 Ha (Min)</span>
+          <span>4.5 Ha (Promedio Yungas)</span>
+          <span>20.0 Ha (Max)</span>
+        </div>
+      </div>
+
+      <!-- Sentinel-2 Satellite Verification Statement -->
+      <div class="p-4 bg-[#F5F5F7] rounded-xl border border-[#E5E5EA] flex items-start gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-[#248A3D] mt-1 shrink-0"></span>
+        <div class="text-xs text-[#1D1D1F] leading-relaxed">
+          <span class="font-semibold">Verificación Satelital Sentinel-2 (Copernicus):</span>
+          La parcela no presenta alertas de desmonte posterior al 31 de diciembre de 2020. Certificado apto para exportación bajo Reglamento EU 2023/1115 (EUDR).
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

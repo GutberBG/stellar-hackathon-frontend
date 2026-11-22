@@ -1,0 +1,302 @@
+<div class="max-w-6xl mx-auto px-6 py-10">
+  <!-- Header Minimalista (Lienzo Abierto) -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-[#E5E5EA]">
+    <div>
+      <div class="text-xs uppercase tracking-wider text-[#86868B] font-medium mb-1">
+        Historial Financiero & Trazabilidad
+      </div>
+      <h1 class="text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-[#1D1D1F]">
+        Mis Operaciones
+      </h1>
+      <p class="text-sm text-[#86868B] mt-1">
+        Entregas notarizadas en Stellar y adelantos de cosecha liquidados vía Pollar Simple QR para {{ producerName() }}.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs font-mono text-[#86868B]">
+      <span>Comunidad:</span>
+      <span class="text-[#1D1D1F] font-semibold">{{ producerCommunity() }}</span>
+    </div>
+  </div>
+
+  <!-- Metric Strip (Hairlines, No Cards) -->
+  <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#E5E5EA] border-b border-[#E5E5EA] py-6">
+    <div class="py-3 md:py-0 md:px-6 first:pl-0">
+      <div class="text-xs font-medium text-[#86868B]">Cacao Total Acopiado</div>
+      <div class="text-2xl md:text-3xl font-semibold tracking-tight text-[#1D1D1F] tabular-nums mt-1">
+        {{ totalCacaoKg() | number: '1.0-1' }} <span class="text-sm font-normal text-[#86868B]">kg netos</span>
+      </div>
+      <div class="text-[11px] text-[#248A3D] font-medium mt-1">100% Notarizado en Stellar</div>
+    </div>
+
+    <div class="py-3 md:py-0 md:px-6">
+      <div class="text-xs font-medium text-[#86868B]">Liquidado a Cuenta Bancaria</div>
+      <div class="text-2xl md:text-3xl font-semibold tracking-tight text-[#1D1D1F] tabular-nums mt-1">
+        Bs. {{ totalPaidBob() | number: '1.2-2' }}
+      </div>
+      <div class="text-[11px] text-[#86868B] mt-1">Vía Pollar / Banco Unión</div>
+    </div>
+
+    <div class="py-3 md:py-0 md:px-6">
+      <div class="text-xs font-medium text-[#86868B]">Crédito Factoring Activo</div>
+      <div class="text-2xl md:text-3xl font-semibold tracking-tight text-[#1D1D1F] tabular-nums mt-1">
+        ${{ activeCreditUsdc() | number: '1.2-2' }} <span class="text-sm font-normal text-[#86868B]">USDC</span>
+      </div>
+      <div class="text-[11px] text-[#B25000] font-medium mt-1">Retenido en Smart Contract Escrow</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Factoring & Adelantos Solicitados -->
+  <div class="pt-10 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-semibold tracking-[-0.02em] text-[#1D1D1F]">
+          Adelantos de Cosecha & Factoring
+        </h2>
+        <p class="text-xs text-[#86868B] mt-0.5">
+          Contratos fiduciarios con la Pool Vaquita y códigos de cobro Simple QR.
+        </p>
+      </div>
+    </div>
+
+    @if (loans().length === 0) {
+      <div class="py-8 text-center text-xs text-[#86868B] border border-dashed border-[#E5E5EA] rounded-xl">
+        No registras adelantos de cosecha activos en este momento.
+      </div>
+    } @else {
+      <!-- macOS Style Editorial Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-[#E5E5EA] text-[#86868B] font-medium">
+              <th class="py-3 pr-4">Código Préstamo</th>
+              <th class="py-3 px-4">Monto Solicitado</th>
+              <th class="py-3 px-4">Monto Aprobado</th>
+              <th class="py-3 px-4">Equivalente BOB</th>
+              <th class="py-3 px-4">Estado Escrow</th>
+              <th class="py-3 px-4">Fecha</th>
+              <th class="py-3 pl-4 text-right">Cobro Pollar</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E5E5EA]">
+            @for (loan of loans(); track loan.id) {
+              <tr class="hover:bg-[#FBFBFD] transition-colors">
+                <td class="py-4 pr-4 font-mono font-medium text-[#1D1D1F]">
+                  {{ loan.loan_code }}
+                </td>
+                <td class="py-4 px-4 tabular-nums text-[#86868B]">
+                  {{ loan.requested_amount_usdc | currencyUsdc }}
+                </td>
+                <td class="py-4 px-4 font-semibold tabular-nums text-[#1D1D1F]">
+                  {{ loan.approved_amount_usdc | currencyUsdc }}
+                </td>
+                <td class="py-4 px-4 tabular-nums font-medium text-[#1D1D1F]">
+                  Bs. {{ loan.approved_amount_usdc * 6.96 | number: '1.2-2' }}
+                </td>
+                <td class="py-4 px-4">
+                  @if (loan.status === 'ACTIVE_ESCROW') {
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#FFF9F2] text-[#B25000] border border-[#FFE2C2] rounded-full text-[11px] font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#B25000]"></span>
+                      Escrow Activo
+                    </span>
+                  } @else if (loan.status === 'SETTLED') {
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#F0FDF4] text-[#248A3D] border border-[#DCFCE7] rounded-full text-[11px] font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#248A3D]"></span>
+                      Liquidado
+                    </span>
+                  } @else {
+                    <span class="px-2 py-0.5 bg-[#F5F5F7] text-[#86868B] rounded text-[11px]">
+                      {{ loan.status }}
+                    </span>
+                  }
+                </td>
+                <td class="py-4 px-4 text-[#86868B] font-mono text-[11px]">
+                  {{ loan.created_at | timeAgo }}
+                </td>
+                <td class="py-4 pl-4 text-right">
+                  <button
+                    type="button"
+                    (click)="openQrModal(loan)"
+                    class="px-3.5 py-1.5 bg-[#1D1D1F] hover:bg-black text-white text-[11px] font-medium rounded-full transition-all active:scale-95"
+                  >
+                    Ver QR Simple
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Section 2: Entregas Notarizadas en Stellar -->
+  <div class="pt-12 space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-semibold tracking-[-0.02em] text-[#1D1D1F]">
+          Entregas Notarizadas en Stellar Blockchain
+        </h2>
+        <p class="text-xs text-[#86868B] mt-0.5">
+          Registro inmutable de peso, calidad, humedad y coordenadas EUDR.
+        </p>
+      </div>
+    </div>
+
+    <!-- Editorial Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead>
+          <tr class="border-b border-[#E5E5EA] text-[#86868B] font-medium">
+            <th class="py-3 pr-4">Boleta</th>
+            <th class="py-3 px-4">Tipo</th>
+            <th class="py-3 px-4">Peso Neto</th>
+            <th class="py-3 px-4">Grado</th>
+            <th class="py-3 px-4">Monto USDC</th>
+            <th class="py-3 px-4">Total BOB</th>
+            <th class="py-3 pl-4 text-right">Transacción Stellar</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#E5E5EA]">
+          @for (d of deliveries(); track d.id) {
+            <tr class="hover:bg-[#FBFBFD] transition-colors">
+              <td class="py-4 pr-4 font-mono font-medium text-[#1D1D1F]">
+                {{ d.delivery_code }}
+              </td>
+              <td class="py-4 px-4">
+                <span
+                  class="px-2 py-0.5 rounded text-[10px] font-medium"
+                  [ngClass]="d.cacao_type === 'SECO' ? 'bg-[#F5F5F7] text-[#1D1D1F]' : 'bg-[#FFF9F2] text-[#B25000]'"
+                >
+                  {{ d.cacao_type === 'SECO' ? 'En Seco' : 'En Baba' }}
+                </span>
+              </td>
+              <td class="py-4 px-4 font-medium tabular-nums text-[#1D1D1F]">
+                {{ d.net_dry_weight_kg | number: '1.1-1' }} kg
+              </td>
+              <td class="py-4 px-4">
+                <span class="font-semibold" [ngClass]="d.quality_grade === 'A' ? 'text-[#248A3D]' : 'text-[#B25000]'">
+                  Grado {{ d.quality_grade }}
+                </span>
+              </td>
+              <td class="py-4 px-4 tabular-nums text-[#86868B]">
+                {{ d.total_amount_usdc | currencyUsdc }}
+              </td>
+              <td class="py-4 px-4 tabular-nums font-semibold text-[#1D1D1F]">
+                {{ d.total_amount_bob | currencyBob }}
+              </td>
+              <td class="py-4 pl-4 text-right font-mono">
+                @if (d.stellar_tx_hash) {
+                  <div class="inline-flex items-center gap-2">
+                    <a
+                      [href]="'https://stellar.expert/explorer/testnet/tx/' + d.stellar_tx_hash"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-[11px] text-[#0071E3] hover:underline"
+                    >
+                      {{ d.stellar_tx_hash | truncateHash }}
+                    </a>
+                    <button
+                      type="button"
+                      (click)="copyHash(d.stellar_tx_hash)"
+                      class="p-1 hover:bg-[#E8E8ED] rounded transition-colors text-[#86868B] hover:text-[#1D1D1F]"
+                      title="Copiar Hash"
+                    >
+                      @if (copiedHash() === d.stellar_tx_hash) {
+                        <span class="text-[10px] text-[#248A3D] font-sans font-semibold">Copiado</span>
+                      } @else {
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                      }
+                    </button>
+                  </div>
+                } @else {
+                  <span class="text-[#86868B] text-[11px]">En Proceso</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Protagonista Único (Single Elevated Surface) para QR Pollar -->
+@if (isQrModalOpen() && selectedLoan()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-slide">
+    <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl p-6 border border-[#E5E5EA]">
+      <!-- Close Button -->
+      <button
+        type="button"
+        (click)="closeQrModal()"
+        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#F5F5F7] hover:bg-[#E8E8ED] flex items-center justify-center text-[#1D1D1F] transition-colors"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center space-y-1 mb-5">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#F5F5F7] rounded-full text-[11px] font-medium text-[#1D1D1F]">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#248A3D]"></span>
+          Pollar Simple QR · Bolivia
+        </div>
+        <h3 class="text-xl font-semibold tracking-[-0.02em] text-[#1D1D1F] pt-2">
+          Cobro Interbancario
+        </h3>
+        <p class="text-xs text-[#86868B]">
+          Escanea desde cualquier banca móvil autorizada (BCP, BNB, Unión, Bisa, Mercantil).
+        </p>
+      </div>
+
+      <!-- QR Display -->
+      <div class="flex flex-col items-center justify-center p-4 bg-[#FBFBFD] rounded-2xl border border-[#E5E5EA] mb-4">
+        @if (qrDataUrl()) {
+          <img [src]="qrDataUrl()" alt="Código Simple QR Pollar" class="w-56 h-56 rounded-lg" />
+        } @else {
+          <div class="w-56 h-56 flex items-center justify-center text-xs text-[#86868B]">
+            Generando código QR...
+          </div>
+        }
+        <div class="text-[10px] font-mono text-[#86868B] mt-2">
+          ID: {{ selectedLoan()?.loan_code }}
+        </div>
+      </div>
+
+      <!-- Financial Breakdown -->
+      <div class="space-y-2 text-xs border-t border-[#E5E5EA] pt-3">
+        <div class="flex justify-between text-[#86868B]">
+          <span>Monto Aprobado USDC:</span>
+          <span class="font-medium text-[#1D1D1F] tabular-nums">
+            {{ selectedLoan()?.approved_amount_usdc | currencyUsdc }}
+          </span>
+        </div>
+        <div class="flex justify-between text-[#86868B]">
+          <span>Tipo de Cambio Oficial:</span>
+          <span class="font-mono text-[#1D1D1F]">1 USDC = 6.96 BOB</span>
+        </div>
+        <div class="flex justify-between text-sm font-semibold text-[#1D1D1F] pt-1 border-t border-[#E5E5EA]">
+          <span>Total a Percibir:</span>
+          <span class="tabular-nums text-[#248A3D]">
+            Bs. {{ selectedLoan()!.approved_amount_usdc * 6.96 | number: '1.2-2' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <button
+          type="button"
+          (click)="closeQrModal()"
+          class="w-full py-3 bg-[#1D1D1F] hover:bg-black text-white text-xs font-medium rounded-full transition-all active:scale-[0.98]"
+        >
+          Cerrar Boleta de Cobro
+        </button>
+      </div>
+    </div>
+  </div>
+}

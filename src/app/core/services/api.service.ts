@@ -53,4 +53,24 @@ export class ApiService {
       })
     );
   }
+
+  put<T>(endpoint: string, body: any, fallbackFactory?: (req: any) => T): Observable<T> {
+    if (this.fallbackModeActive()) {
+      return fallbackFactory ? of(fallbackFactory(body)) : throwError(() => new Error('Offline'));
+    }
+
+    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body).pipe(
+      tap(() => {
+        this.isBackendLive.set(true);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.warn(`[Ayni Cacao API] PUT ${endpoint} unavailable, activating intelligent fallback:`, error.message);
+        this.isBackendLive.set(false);
+        if (fallbackFactory) {
+          return of(fallbackFactory(body));
+        }
+        return throwError(() => error);
+      })
+    );
+  }
 }

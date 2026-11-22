@@ -1,40 +1,121 @@
 <div class="min-h-screen bg-white text-[#1D1D1F] font-sans flex flex-col selection:bg-[#0071E3] selection:text-white">
   <!-- Top Navigation Bar (Authentic Cupertino HIG) -->
   <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E5EA]">
-    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-4">
       
       <!-- Left: Clean Typography Brand -->
-      <a routerLink="/acopio" class="flex items-center gap-2 select-none group">
+      <a [routerLink]="activeRole() === 'PRODUCTOR' ? '/mi-parcela' : '/acopio'" class="flex items-center gap-2 select-none shrink-0">
         <span class="font-semibold text-base tracking-[-0.03em] text-[#1D1D1F]">Ayni Cacao</span>
-        <span class="text-xs text-[#86868B] font-normal tracking-normal hidden sm:inline">Alto Beni</span>
+        <span class="text-xs text-[#86868B] font-normal tracking-normal hidden md:inline">Alto Beni</span>
       </a>
 
-      <!-- Center: Native iOS/macOS Segmented Control -->
-      <nav class="flex items-center p-0.5 rounded-xl bg-[#E8E8ED]">
-        @for (item of navItems; track item.path) {
+      <!-- Center: Native iOS/macOS Segmented Control for Active Role -->
+      <nav class="flex items-center p-0.5 rounded-xl bg-[#E8E8ED] shrink-0">
+        @for (item of navItems(); track item.path) {
           <a
             [routerLink]="item.path"
             routerLinkActive="bg-white text-[#1D1D1F] shadow-sm font-medium"
-            class="px-4 py-1 rounded-[10px] text-xs text-[#86868B] hover:text-[#1D1D1F] transition-all duration-200 ease-out cursor-pointer"
+            class="px-3.5 py-1 rounded-[10px] text-xs text-[#86868B] hover:text-[#1D1D1F] transition-all duration-200 ease-out cursor-pointer whitespace-nowrap"
           >
             {{ item.label }}
           </a>
         }
       </nav>
 
-      <!-- Right: Discrete Tabular Pool Status -->
-      <div class="flex items-center gap-2 text-xs font-mono tabular-nums text-[#86868B]">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#248A3D]"></span>
-        <span class="hidden sm:inline text-[#86868B]">Pool Vaquita ·</span>
-        <span class="font-medium text-[#1D1D1F]">
-          <app-animated-counter [value]="state.vaquitaAvailableLiquidity()" prefix="$" suffix=" USDC"></app-animated-counter>
-        </span>
+      <!-- Right: Pool Status + Apple Style Demo Switcher -->
+      <div class="flex items-center gap-3 shrink-0">
+        <!-- Pool Vaquita Metric -->
+        <div class="hidden lg:flex items-center gap-2 text-xs font-mono tabular-nums text-[#86868B]">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#248A3D]"></span>
+          <span>Pool Vaquita ·</span>
+          <span class="font-medium text-[#1D1D1F]">
+            <app-animated-counter [value]="state.vaquitaAvailableLiquidity()" prefix="$" suffix=" USDC"></app-animated-counter>
+          </span>
+        </div>
+
+        <!-- Role Pill / Demo Switcher Dropdown (Single Elevated Menu) -->
+        <div class="relative">
+          <button
+            type="button"
+            (click)="toggleDemoMenu()"
+            class="px-2.5 py-1 rounded-full text-xs font-medium border border-[#E5E5EA] bg-[#F5F5F7] hover:bg-[#E8E8ED] text-[#1D1D1F] flex items-center gap-1.5 transition-colors"
+          >
+            <span class="w-2 h-2 rounded-full" [ngClass]="{
+              'bg-[#248A3D]': activeRole() === 'PRODUCTOR',
+              'bg-[#0071E3]': activeRole() === 'ACOPIADOR',
+              'bg-[#B25000]': activeRole() === 'LIQUIDEZ'
+            }"></span>
+            <span class="capitalize">{{ activeRole().toLowerCase() }}</span>
+            <svg class="w-3 h-3 text-[#86868B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu -->
+          @if (showDemoMenu()) {
+            <div class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-[#E5E5EA] py-1.5 z-50 text-xs">
+              <div class="px-3 py-1.5 text-[10px] font-medium uppercase tracking-wider text-[#86868B] border-b border-[#E5E5EA]">
+                Cambiar Rol (Modo Demo)
+              </div>
+              <button
+                type="button"
+                (click)="switchRole('ACOPIADOR')"
+                class="w-full text-left px-3 py-2 hover:bg-[#F5F5F7] flex items-center justify-between"
+                [ngClass]="activeRole() === 'ACOPIADOR' ? 'font-semibold text-[#0071E3]' : 'text-[#1D1D1F]'"
+              >
+                <span>Acopiador (El Ceibo)</span>
+                @if (activeRole() === 'ACOPIADOR') {
+                  <span class="text-xs">✓</span>
+                }
+              </button>
+              <button
+                type="button"
+                (click)="switchRole('PRODUCTOR')"
+                class="w-full text-left px-3 py-2 hover:bg-[#F5F5F7] flex items-center justify-between"
+                [ngClass]="activeRole() === 'PRODUCTOR' ? 'font-semibold text-[#248A3D]' : 'text-[#1D1D1F]'"
+              >
+                <span>Mateo (Productor)</span>
+                @if (activeRole() === 'PRODUCTOR') {
+                  <span class="text-xs">✓</span>
+                }
+              </button>
+              <button
+                type="button"
+                (click)="switchRole('LIQUIDEZ')"
+                class="w-full text-left px-3 py-2 hover:bg-[#F5F5F7] flex items-center justify-between"
+                [ngClass]="activeRole() === 'LIQUIDEZ' ? 'font-semibold text-[#B25000]' : 'text-[#1D1D1F]'"
+              >
+                <span>Inversor (Pool Vaquita)</span>
+                @if (activeRole() === 'LIQUIDEZ') {
+                  <span class="text-xs">✓</span>
+                }
+              </button>
+
+              <div class="border-t border-[#E5E5EA] my-1"></div>
+
+              <a
+                routerLink="/auth"
+                (click)="showDemoMenu.set(false)"
+                class="block px-3 py-2 text-[#86868B] hover:text-[#1D1D1F] hover:bg-[#F5F5F7]"
+              >
+                Pantalla de Acceso / Registro
+              </a>
+              <button
+                type="button"
+                (click)="logout()"
+                class="w-full text-left px-3 py-2 text-[#D70015] hover:bg-[#FFF2F2]"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
+          }
+        </div>
       </div>
     </div>
   </header>
 
   <!-- Main Open Canvas Content -->
-  <main class="flex-1 w-full max-w-6xl mx-auto px-6 py-10">
+  <main class="flex-1 w-full">
     <router-outlet></router-outlet>
   </main>
 

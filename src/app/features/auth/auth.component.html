@@ -1,0 +1,297 @@
+<div class="min-h-[calc(100vh-65px)] flex flex-col md:flex-row bg-[#FFFFFF]">
+  <!-- Left Editorial Column (macOS Pro Split Canvas) -->
+  <div class="w-full md:w-5/12 bg-[#F5F5F7] p-8 md:p-14 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#E5E5EA]">
+    <div class="space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-[#E5E5EA] text-xs font-medium text-[#1D1D1F]">
+        <span class="w-2 h-2 rounded-full bg-[#248A3D]"></span>
+        Alto Beni & Palos Blancos · Bolivia
+      </div>
+
+      <div class="space-y-3">
+        <h1 class="text-3xl md:text-4xl font-semibold tracking-[-0.03em] text-[#1D1D1F] leading-tight">
+          El estándar abierto para el cacao boliviano.
+        </h1>
+        <p class="text-sm md:text-base text-[#86868B] leading-relaxed">
+          Acopio transparente, trazabilidad satelital EUDR en la red Stellar, factoring predictivo con microclima de los Yungas y liquidación interbancaria en bolivianos vía Pollar.
+        </p>
+      </div>
+
+      <!-- Feature Lines (Hairline list, no cards) -->
+      <div class="pt-6 border-t border-[#E5E5EA] space-y-5">
+        <div class="flex items-start gap-4">
+          <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center border border-[#E5E5EA] text-xs font-semibold text-[#1D1D1F] shrink-0">
+            1
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-[#1D1D1F]">Billetera Invisible Stellar</div>
+            <div class="text-xs text-[#86868B] mt-0.5">
+              Cuentas autogeneradas vía Pollar SDK sin necesidad de memorizar frases semilla.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center border border-[#E5E5EA] text-xs font-semibold text-[#1D1D1F] shrink-0">
+            2
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-[#1D1D1F]">Certificación Satelital EUDR</div>
+            <div class="text-xs text-[#86868B] mt-0.5">
+              Polígonos georreferenciados y análisis Sentinel-2 contra deforestación en tiempo real.
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4">
+          <div class="w-7 h-7 rounded-full bg-white flex items-center justify-center border border-[#E5E5EA] text-xs font-semibold text-[#1D1D1F] shrink-0">
+            3
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-[#1D1D1F]">Cobro Simple QR Nacional</div>
+            <div class="text-xs text-[#86868B] mt-0.5">
+              Desembolsos de factoring convertidos a Bolivianos y cobrables en cualquier banca móvil del país.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Demo Switcher Section -->
+    <div class="pt-8 border-t border-[#E5E5EA]">
+      <div class="text-xs font-medium uppercase tracking-wider text-[#86868B] mb-3">
+        Acceso Rápido para Demostración
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          (click)="quickDemoLogin('ACOPIADOR')"
+          class="px-3 py-1.5 bg-white hover:bg-[#E8E8ED] border border-[#E5E5EA] rounded-full text-xs font-medium text-[#1D1D1F] transition-colors active:scale-95"
+        >
+          Técnico Acopiador (El Ceibo)
+        </button>
+        <button
+          type="button"
+          (click)="quickDemoLogin('PRODUCTOR')"
+          class="px-3 py-1.5 bg-white hover:bg-[#E8E8ED] border border-[#E5E5EA] rounded-full text-xs font-medium text-[#1D1D1F] transition-colors active:scale-95"
+        >
+          Mateo Mamani (Productor)
+        </button>
+        <button
+          type="button"
+          (click)="quickDemoLogin('LIQUIDEZ')"
+          class="px-3 py-1.5 bg-white hover:bg-[#E8E8ED] border border-[#E5E5EA] rounded-full text-xs font-medium text-[#1D1D1F] transition-colors active:scale-95"
+        >
+          Inversor (Pool Vaquita)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Form Column (Open Canvas) -->
+  <div class="w-full md:w-7/12 p-8 md:p-14 flex flex-col justify-center max-w-xl mx-auto">
+    <!-- Mode Segmented Control (iOS Style) -->
+    <div class="bg-[#E8E8ED] p-1 rounded-xl flex items-center max-w-xs mb-8">
+      <button
+        type="button"
+        (click)="setMode('login')"
+        class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all duration-200"
+        [ngClass]="mode() === 'login' ? 'bg-white text-[#1D1D1F] shadow-sm' : 'text-[#86868B] hover:text-[#1D1D1F]'"
+      >
+        Iniciar Sesión
+      </button>
+      <button
+        type="button"
+        (click)="setMode('register')"
+        class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all duration-200"
+        [ngClass]="mode() === 'register' ? 'bg-white text-[#1D1D1F] shadow-sm' : 'text-[#86868B] hover:text-[#1D1D1F]'"
+      >
+        Crear Cuenta
+      </button>
+    </div>
+
+    <!-- Pollar 1-Click Social Sign-In -->
+    <div class="space-y-4">
+      <button
+        type="button"
+        (click)="loginWithPollarOAuth()"
+        [disabled]="isLoading()"
+        class="w-full py-3 px-4 bg-white hover:bg-[#F5F5F7] border border-[#E5E5EA] rounded-xl text-sm font-medium text-[#1D1D1F] flex items-center justify-center gap-3 transition-colors active:scale-[0.99]"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24">
+          <path
+            fill="#4285F4"
+            d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+          />
+        </svg>
+        <span>Continuar con Google · Billetera Pollar</span>
+      </button>
+
+      <div class="flex items-center gap-4 py-2">
+        <div class="flex-1 h-[1px] bg-[#E5E5EA]"></div>
+        <div class="text-xs text-[#86868B] uppercase tracking-wider">o con credenciales</div>
+        <div class="flex-1 h-[1px] bg-[#E5E5EA]"></div>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="mb-4 p-3 bg-[#FFF2F2] border border-[#FFD0D0] text-[#D70015] rounded-xl text-xs font-medium">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="space-y-4">
+      @if (mode() === 'register') {
+        <!-- Role Selector (iOS Segmented Control) -->
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-[#86868B]">Tipo de Cuenta</label>
+          <div class="bg-[#E8E8ED] p-1 rounded-xl flex items-center">
+            <button
+              type="button"
+              (click)="setRole('PRODUCTOR')"
+              class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all"
+              [ngClass]="selectedRole() === 'PRODUCTOR' ? 'bg-white text-[#1D1D1F] shadow-sm' : 'text-[#86868B]'"
+            >
+              Soy Productor
+            </button>
+            <button
+              type="button"
+              (click)="setRole('ACOPIADOR')"
+              class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all"
+              [ngClass]="selectedRole() === 'ACOPIADOR' ? 'bg-white text-[#1D1D1F] shadow-sm' : 'text-[#86868B]'"
+            >
+              Soy Acopiador
+            </button>
+            <button
+              type="button"
+              (click)="setRole('LIQUIDEZ')"
+              class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all"
+              [ngClass]="selectedRole() === 'LIQUIDEZ' ? 'bg-white text-[#1D1D1F] shadow-sm' : 'text-[#86868B]'"
+            >
+              Inversionista
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium text-[#86868B]">Nombre Completo</label>
+          <input
+            type="text"
+            [ngModel]="fullName()"
+            (ngModelChange)="fullName.set($event)"
+            name="fullName"
+            required
+            placeholder="Ej. Mateo Mamani Ticona"
+            class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+          />
+        </div>
+
+        @if (selectedRole() === 'PRODUCTOR') {
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-[#86868B]">Cédula de Identidad</label>
+              <input
+                type="text"
+                [ngModel]="ciNumber()"
+                (ngModelChange)="ciNumber.set($event)"
+                name="ciNumber"
+                placeholder="Ej. 6543210-LP"
+                class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-[#86868B]">Hectáreas Parcela</label>
+              <input
+                type="number"
+                step="0.1"
+                [ngModel]="parcelHectares()"
+                (ngModelChange)="parcelHectares.set($event)"
+                name="parcelHectares"
+                placeholder="Ej. 4.5"
+                class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-[#86868B]">Comunidad</label>
+              <input
+                type="text"
+                [ngModel]="community()"
+                (ngModelChange)="community.set($event)"
+                name="community"
+                placeholder="Ej. Sapecho (Alto Beni)"
+                class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-[#86868B]">Cooperativa</label>
+              <input
+                type="text"
+                [ngModel]="cooperative()"
+                (ngModelChange)="cooperative.set($event)"
+                name="cooperative"
+                placeholder="Ej. El Ceibo"
+                class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+              />
+            </div>
+          </div>
+        }
+      }
+
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-[#86868B]">Correo Electrónico</label>
+        <input
+          type="email"
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          name="email"
+          required
+          placeholder="correo@ejemplo.com"
+          class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+        />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-[#86868B]">Contraseña</label>
+        <input
+          type="password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          required
+          placeholder="••••••••"
+          class="w-full px-3.5 py-2.5 bg-[#F5F5F7] border border-transparent focus:border-[#0071E3] focus:bg-white rounded-xl text-sm text-[#1D1D1F] outline-none transition-all"
+        />
+      </div>
+
+      <div class="pt-4">
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="w-full py-3.5 bg-[#1D1D1F] hover:bg-black text-white text-sm font-medium rounded-full transition-all active:scale-[0.98] disabled:opacity-50"
+        >
+          @if (isLoading()) {
+            Procesando...
+          } @else {
+            {{ mode() === 'login' ? 'Iniciar Sesión' : 'Registrarse y Crear Billetera' }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

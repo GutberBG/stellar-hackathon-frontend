@@ -2,13 +2,18 @@ export type RiskLevel = 'BAJO' | 'MEDIO' | 'ALTO';
 
 export interface Producer {
   id: number;
+  user_id?: number;
   name: string;
+  ci_number?: string;
   community: string;
   cooperative: string;
   eudr_latitude: number;
   eudr_longitude: number;
   eudr_plot_code: string;
+  parcel_hectares?: number;
+  eudr_certified?: boolean;
   phone: string;
+  bank_account_hint?: string;
   compliance_score: number;
   risk_tier: RiskLevel;
   created_at?: string;
