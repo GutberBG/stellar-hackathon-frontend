@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FactoringService } from '../../core/services/factoring.service';
 import { StateService } from '../../core/services/state.service';
+import { PollarService } from '../../core/services/pollar.service';
 import {
   FactoringExecuteRequest,
   FactoringExecuteResponse,
@@ -32,6 +33,9 @@ type ExecutionStep = 'IDLE' | 'STEP_1_VAQUITA' | 'STEP_2_TRUSTLESS' | 'STEP_3_PO
 export class SettlementComponent implements OnInit {
   private factoringService = inject(FactoringService);
   private state = inject(StateService);
+  protected pollar = inject(PollarService);
+  protected pollarEmailInput: string = '';
+  protected pollarOtpInput: string = '';
 
   readonly exchangeRate = environment.exchangeRateBob;
 
@@ -92,6 +96,7 @@ export class SettlementComponent implements OnInit {
       expected_harvest_kg: 1000,
       rainfall_mm: 160,
       humidity_pct: 78,
+      pollar_wallet_address: this.pollar.stellarAddress() || undefined,
     };
 
     setTimeout(() => {
