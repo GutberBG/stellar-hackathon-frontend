@@ -29,7 +29,7 @@ export class OracleFactoringComponent implements OnInit {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
 
-  protected allProducers = signal<ProducerDetail[]>([]);
+  protected allProducers = signal<ProducerDetail[]>(this.state.producers());
   protected selectedProducerId = signal<number>(1);
 
   protected rainfallMm: number = 160;
