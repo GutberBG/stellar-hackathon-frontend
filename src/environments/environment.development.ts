@@ -6,4 +6,5 @@ export const environment = {
   trustlessWorkExplorerBase: 'https://testnet.trustlesswork.com/escrow/',
   exchangeRateBob: 6.96,
   defaultBasePriceUsdc: 4.80,
+  pollarApiKey: 'pub_testnet_1d0835e1bd393d8851efc7f3fc3c064e',
 };

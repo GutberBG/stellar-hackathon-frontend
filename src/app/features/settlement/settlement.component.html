@@ -52,6 +52,71 @@
       <span class="font-medium text-[#1D1D1F]">Pollar Simple QR (Bolivia Interbancario)</span>
     </div>
 
+    <div class="py-3 space-y-2">
+      <div class="flex justify-between items-center">
+        <span class="text-[#86868B]">Wallet Invisible Pollar (Testnet)</span>
+        @if (pollar.isAuthenticated()) {
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-[11px] text-[#248A3D]">
+              {{ pollar.stellarAddress() ? (pollar.stellarAddress() | slice:0:6) + '...' + (pollar.stellarAddress() | slice:-4) : (pollar.userEmail() || 'Conectada') }}
+            </span>
+            <button type="button" (click)="pollar.logout()" class="text-[11px] text-[#86868B] hover:text-[#1D1D1F] underline cursor-pointer">
+              Salir
+            </button>
+          </div>
+        } @else {
+          <button
+            type="button"
+            (click)="pollar.loginWithGoogle()"
+            class="px-2.5 py-1 rounded-lg bg-[#1D1D1F] text-white text-[11px] font-medium hover:bg-black cursor-pointer"
+          >
+            Conectar con Google
+          </button>
+        }
+      </div>
+
+      @if (!pollar.isAuthenticated()) {
+        <div class="flex items-center gap-2 pt-1">
+          @if (pollar.authStep() === 'entering_code' || pollar.authStep() === 'verifying_email_code') {
+            <input
+              type="text"
+              [(ngModel)]="pollarOtpInput"
+              placeholder="Código OTP enviado al correo"
+              class="flex-1 px-2.5 py-1 text-[11px] border border-[#E5E5EA] rounded-lg bg-white focus:outline-none focus:border-[#0071E3]"
+            />
+            <button
+              type="button"
+              (click)="pollar.verifyEmailCode(pollarOtpInput)"
+              class="px-2.5 py-1 rounded-lg bg-[#0071E3] text-white text-[11px] font-medium cursor-pointer"
+            >
+              Verificar
+            </button>
+          } @else {
+            <input
+              type="email"
+              [(ngModel)]="pollarEmailInput"
+              placeholder="O conecta con email..."
+              class="flex-1 px-2.5 py-1 text-[11px] border border-[#E5E5EA] rounded-lg bg-white focus:outline-none focus:border-[#0071E3]"
+            />
+            <button
+              type="button"
+              [disabled]="!pollarEmailInput"
+              (click)="pollar.loginWithEmail(pollarEmailInput)"
+              class="px-2.5 py-1 rounded-lg border border-[#E5E5EA] text-[11px] font-medium text-[#1D1D1F] hover:bg-[#F5F5F7] disabled:opacity-40 cursor-pointer"
+            >
+              Enviar código
+            </button>
+          }
+        </div>
+      }
+
+      @if (pollar.errorMessage()) {
+        <div class="text-[11px] text-[#D70015]">
+          {{ pollar.errorMessage() }}
+        </div>
+      }
+    </div>
+
   </div>
 
   <!-- Checklist Minimalista de Progreso Smart Contract -->
@@ -123,7 +188,7 @@
         [amountUsdc]="executionResult()!.approved_amount_usdc"
         [qrPayload]="executionResult()!.pollar_qr_payload"
         [trustlessEscrowId]="executionResult()!.trustless_escrow_id"
-        stellarTxHash="9f83a21bc9e1488c919d70233b2fe963d7e8b61efc0a76c8c912f2010cb7c844"
+        [stellarTxHash]="executionResult()!.stellar_tx_hash || '9f83a21bc9e1488c919d70233b2fe963d7e8b61efc0a76c8c912f2010cb7c844'"
       ></app-qr-receipt-card>
     </div>
   }
