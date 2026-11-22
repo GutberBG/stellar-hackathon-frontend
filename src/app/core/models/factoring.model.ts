@@ -30,6 +30,7 @@ export interface FactoringExecuteRequest {
   expected_harvest_kg: number;
   rainfall_mm: number;
   humidity_pct: number;
+  pollar_wallet_address?: string;
 }
 
 export interface FactoringExecuteResponse {
@@ -48,6 +49,7 @@ export interface FactoringExecuteResponse {
   pollar_payout_id: string;
   pollar_qr_payload: string;
   qr_deep_link: string;
+  stellar_tx_hash?: string;
   created_at: string;
 }
 
